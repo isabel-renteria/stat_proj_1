@@ -1,0 +1,43 @@
+---
+title: "Project 1"
+author: "Isabel Renteria and Zuzu Trottier"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Reading in our data
+```{r}
+raw_1516 <- read.csv("~/stat_proj_1/data/Y1516.csv", header = T)
+raw_1617 <- read.csv("~/stat_proj_1/data/Y1617.csv", header = T)
+raw_1718 <- read.csv("~/stat_proj_1/data/Y1718.csv", header = T)
+raw_1819 <- read.csv("~/stat_proj_1/data/Y1819.csv", header = T)
+raw_2122 <- read.csv("~/stat_proj_1/data/Y2122.csv", header = T)
+raw_2223 <- read.csv("~/stat_proj_1/data/Y2223.csv", header = T)
+
+library(tidyverse)
+
+post_covid <- rbind(raw_2122,raw_2223)
+
+Y1516 <- raw_1516 %>% 
+  filter(Primary_Category == "ES")  %>%
+  select(contains("NWEA") & contains("Pct"))
+Y1617 <- raw_1617 %>% 
+  filter(Primary_Category == "ES")  %>%
+  select(contains("NWEA") & contains("Pct"))
+Y1718 <- raw_1718 %>% 
+  filter(Primary_Category == "ES")  %>%
+  select(contains("NWEA") & contains("Pct"))
+Y1819 <- raw_1819 %>% 
+  filter(Primary_Category == "ES")  %>%
+  select(contains("NWEA") & contains("Pct"))
+
+pre_covid <- rbind(Y1516,Y1617,Y1819,Y1718)
+post_covid <- rbind(raw_2122,raw_2223)
+
+post_covid <- post_covid %>% 
+  filter(Primary_Category == "ES")  %>%
+  select(contains("NWEA") & contains("Pct"))
+
+```
+
