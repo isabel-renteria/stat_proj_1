@@ -5,39 +5,77 @@ output: html_document
 editor_options: 
   chunk_output_type: console
 ---
+We want to be able to compare test scores but there are no NWEA scores for anything post covid. Furthermore, before the 1718 school year, students took the ACT instead of the SAT. hence, we should consider pre covid to be (17-18,18-19) and post covid to be (20-21,21-22). Thus, we will compare high school standardized testing score between these four years.
 
-## Reading in our data
+
+## Reading in our data and filter it
 ```{r}
 raw_1516 <- read.csv("~/stat_proj_1/data/Y1516.csv", header = T)
 raw_1617 <- read.csv("~/stat_proj_1/data/Y1617.csv", header = T)
+# begin administering SAT instead of ACT after 1617 school year
 raw_1718 <- read.csv("~/stat_proj_1/data/Y1718.csv", header = T)
 raw_1819 <- read.csv("~/stat_proj_1/data/Y1819.csv", header = T)
 raw_2122 <- read.csv("~/stat_proj_1/data/Y2122.csv", header = T)
 raw_2223 <- read.csv("~/stat_proj_1/data/Y2223.csv", header = T)
 
 library(tidyverse)
+filt_1516 <- raw_1516 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
 
-post_covid <- rbind(raw_2122,raw_2223)
+filt_1617 <- raw_1617 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
 
-Y1516 <- raw_1516 %>% 
-  filter(Primary_Category == "ES")  %>%
-  select(contains("NWEA") & contains("Pct"))
-Y1617 <- raw_1617 %>% 
-  filter(Primary_Category == "ES")  %>%
-  select(contains("NWEA") & contains("Pct"))
-Y1718 <- raw_1718 %>% 
-  filter(Primary_Category == "ES")  %>%
-  select(contains("NWEA") & contains("Pct"))
-Y1819 <- raw_1819 %>% 
-  filter(Primary_Category == "ES")  %>%
-  select(contains("NWEA") & contains("Pct"))
+filt_1718 <- raw_1718 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
 
-pre_covid <- rbind(Y1516,Y1617,Y1819,Y1718)
-post_covid <- rbind(raw_2122,raw_2223)
+filt_1819 <- raw_1819 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
 
-post_covid <- post_covid %>% 
-  filter(Primary_Category == "ES")  %>%
-  select(contains("NWEA") & contains("Pct"))
+filt_2122 <- raw_2122 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
 
+filt_2223 <- raw_2223 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_2122$Student_Attendance_Year_1_Pct <- filt_2223$Student_Attendance_Year_1_Pct
+
+pre_covid <- rbind(filt_1516,filt_1617,filt_1718)
+post_covid <- rbind(filt_2122,filt_2223)
 ```
 
