@@ -355,15 +355,17 @@ display: none;
 </div>
 
 
-<div id="reading-in-our-data" class="section level2">
-<h2>Reading in our data</h2>
-<pre class="r"><code>raw_1516 &lt;- read.csv(&quot;~/stat_proj_1/data/Y1516.csv&quot;, header = T)
+<div id="reading-in-our-data-and-filter-it" class="section level2">
+<h2>Reading in our data and filter it</h2>
+<pre class="r"><code># read in data
+raw_1516 &lt;- read.csv(&quot;~/stat_proj_1/data/Y1516.csv&quot;, header = T)
 raw_1617 &lt;- read.csv(&quot;~/stat_proj_1/data/Y1617.csv&quot;, header = T)
 raw_1718 &lt;- read.csv(&quot;~/stat_proj_1/data/Y1718.csv&quot;, header = T)
 raw_1819 &lt;- read.csv(&quot;~/stat_proj_1/data/Y1819.csv&quot;, header = T)
 raw_2122 &lt;- read.csv(&quot;~/stat_proj_1/data/Y2122.csv&quot;, header = T)
-raw_2213 &lt;- read.csv(&quot;~/stat_proj_1/data/Y2223.csv&quot;, header = T)
+raw_2223 &lt;- read.csv(&quot;~/stat_proj_1/data/Y2223.csv&quot;, header = T)
 
+# filter data for the attendance and suspension columns
 library(tidyverse)</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
@@ -375,9 +377,136 @@ library(tidyverse)</code></pre>
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()
 ## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>Y1516 &lt;- raw_1516 %&gt;% 
-  filter(Primary_Category == &quot;ES&quot;)  %&gt;%
-  select(matches(&quot;^NWEA.&quot;))</code></pre>
+<pre class="r"><code>filt_1516 &lt;- raw_1516 %&gt;% 
+  filter(Primary_Category == &quot;HS&quot;) %&gt;%
+  select(contains(&quot;Attendance&quot;) | 
+         contains(&quot;Suspensions&quot;)) %&gt;%
+  select(!contains(&quot;Avg&quot;)) %&gt;%
+  select(!contains(&quot;Lbl&quot;)) %&gt;%
+  select(!contains(&quot;PSAT&quot;)) %&gt;% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_1617 &lt;- raw_1617 %&gt;% 
+  filter(Primary_Category == &quot;HS&quot;) %&gt;%
+  select(contains(&quot;Attendance&quot;) | 
+         contains(&quot;Suspensions&quot;)) %&gt;%
+  select(!contains(&quot;Avg&quot;)) %&gt;%
+  select(!contains(&quot;Lbl&quot;)) %&gt;%
+  select(!contains(&quot;PSAT&quot;)) %&gt;% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_1718 &lt;- raw_1718 %&gt;% 
+  filter(Primary_Category == &quot;HS&quot;) %&gt;%
+  select(contains(&quot;Attendance&quot;) | 
+         contains(&quot;Suspensions&quot;)) %&gt;%
+  select(!contains(&quot;Avg&quot;)) %&gt;%
+  select(!contains(&quot;Lbl&quot;)) %&gt;%
+  select(!contains(&quot;PSAT&quot;)) %&gt;% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_1819 &lt;- raw_1819 %&gt;% 
+  filter(Primary_Category == &quot;HS&quot;) %&gt;%
+  select(contains(&quot;Attendance&quot;) | 
+         contains(&quot;Suspensions&quot;)) %&gt;%
+  select(!contains(&quot;Avg&quot;)) %&gt;%
+  select(!contains(&quot;Lbl&quot;)) %&gt;%
+  select(!contains(&quot;PSAT&quot;)) %&gt;% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_2122 &lt;- raw_2122 %&gt;% 
+  filter(Primary_Category == &quot;HS&quot;) %&gt;%
+  select(contains(&quot;Attendance&quot;) | 
+         contains(&quot;Suspensions&quot;)) %&gt;%
+  select(!contains(&quot;Avg&quot;)) %&gt;%
+  select(!contains(&quot;Lbl&quot;)) %&gt;%
+  select(!contains(&quot;PSAT&quot;)) %&gt;% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_2223 &lt;- raw_2223 %&gt;% 
+  filter(Primary_Category == &quot;HS&quot;) %&gt;%
+  select(contains(&quot;Attendance&quot;) | 
+         contains(&quot;Suspensions&quot;)) %&gt;%
+  select(!contains(&quot;Avg&quot;)) %&gt;%
+  select(!contains(&quot;Lbl&quot;)) %&gt;%
+  select(!contains(&quot;PSAT&quot;)) %&gt;% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+## account for one row which is only NA values in 21-22 dataset
+filt_2122$Student_Attendance_Year_1_Pct &lt;- filt_2223$Student_Attendance_Year_1_Pct
+
+# group by pre and post covid
+pre_covid &lt;- rbind(filt_1516,filt_1617,filt_1718)
+post_covid &lt;- rbind(filt_2122,filt_2223)</code></pre>
+</div>
+<div id="check-if-mvn" class="section level2">
+<h2>Check if MVN</h2>
+<pre class="r"><code>library(MVN)
+mvn(pre_covid, mvnTest = &quot;hz&quot;, showOutliers = T)</code></pre>
+<pre><code>## $multivariateNormality
+##            Test      HZ p value MVN
+## 1 Henze-Zirkler 19.1106       0  NO
+## 
+## $univariateNormality
+##               Test                                Variable Statistic   p value
+## 1 Anderson-Darling      Student_Attendance_Year_1_Pct        33.4207  &lt;0.001  
+## 2 Anderson-Darling      Student_Attendance_Year_2_Pct        38.6767  &lt;0.001  
+## 3 Anderson-Darling      Teacher_Attendance_Year_1_Pct        52.3946  &lt;0.001  
+## 4 Anderson-Darling      Teacher_Attendance_Year_2_Pct        51.4747  &lt;0.001  
+## 5 Anderson-Darling Suspensions_Per_100_Students_Year_1_Pct   69.8490  &lt;0.001  
+## 6 Anderson-Darling Suspensions_Per_100_Students_Year_2_Pct   73.5549  &lt;0.001  
+## 7 Anderson-Darling  Misconducts_To_Suspensions_Year_1_Pct    19.1820  &lt;0.001  
+## 8 Anderson-Darling  Misconducts_To_Suspensions_Year_2_Pct    40.9870  &lt;0.001  
+##   Normality
+## 1    NO    
+## 2    NO    
+## 3    NO    
+## 4    NO    
+## 5    NO    
+## 6    NO    
+## 7    NO    
+## 8    NO    
+## 
+## $Descriptives
+##                                           n     Mean   Std.Dev Median  Min
+## Student_Attendance_Year_1_Pct           549 85.77705 10.635258  89.30 35.4
+## Student_Attendance_Year_2_Pct           549 84.65155 11.916734  89.10 35.4
+## Teacher_Attendance_Year_1_Pct           549 93.53625  2.404728  95.00 88.4
+## Teacher_Attendance_Year_2_Pct           549 91.71931  2.414613  90.20 87.0
+## Suspensions_Per_100_Students_Year_1_Pct 549 23.95619 32.024908  13.85  0.0
+## Suspensions_Per_100_Students_Year_2_Pct 549 17.22969 22.367734  10.40  0.0
+## Misconducts_To_Suspensions_Year_1_Pct   549 33.91885 19.228824  25.55  0.0
+## Misconducts_To_Suspensions_Year_2_Pct   549 27.88452 18.161337  23.60  0.0
+##                                           Max 25th  75th       Skew  Kurtosis
+## Student_Attendance_Year_1_Pct           100.0 82.1 92.80 -1.8159099  3.458073
+## Student_Attendance_Year_2_Pct           100.0 80.8 92.60 -1.5968618  1.945646
+## Teacher_Attendance_Year_1_Pct            97.9 90.3 95.40 -0.6194699 -1.299144
+## Teacher_Attendance_Year_2_Pct            97.7 89.9 95.00  0.5921718 -1.296660
+## Suspensions_Per_100_Students_Year_1_Pct 281.1 10.4 21.75  3.8596284 19.254343
+## Suspensions_Per_100_Students_Year_2_Pct 193.4  8.6 13.90  3.5887136 17.353609
+## Misconducts_To_Suspensions_Year_1_Pct   100.0 24.1 41.45  1.2802087  2.162475
+## Misconducts_To_Suspensions_Year_2_Pct   100.0 21.9 28.20  1.8227053  4.118148
+## 
+## $multivariateOutliers
+## NULL</code></pre>
+</div>
+<div id="confidence-interval-for-o-vector-in-the-difference-with-alpha-level-on-0.05" class="section level2">
+<h2>Confidence interval for O vector in the difference with alpha level
+on 0.05</h2>
+<pre class="r"><code>n1 &lt;- dim(pre_covid)[1]
+n2 &lt;- dim(post_covid)[1]
+p &lt;- dim(pre_covid)[2]
+
+S_pre &lt;- cov(pre_covid)
+S_post &lt;- cov(post_covid)
+
+dif &lt;- colMeans(pre_covid)-colMeans(post_covid)
+
+T2 &lt;- t(dif)%*%solve((S_pre/n1)+(S_post/n2))%*%(dif)
+test_stat &lt;- ((n1+n2-2)*p/(n1+n2-p-1))*qf(0.05,p,n1+n2-p-1, lower.tail=F)
+
+T2 &gt; test_stat #TRUE, reject the null hypothesis and assume that there is a difference between pre- and post- covid</code></pre>
+<pre><code>##      [,1]
+## [1,] TRUE</code></pre>
 </div>
 
 
