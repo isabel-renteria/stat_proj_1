@@ -82,8 +82,25 @@ post_covid <- rbind(filt_2122,filt_2223)
 ```{r}
 library(MVN)
 mvn(pre_covid, mvnTest = "hz", showOutliers = T)
+mvn(post_covid, mvnTest = "hz", showOutliers = T)
 ```
 
+## Box Cox
+```{r}
+bcPower(pre_covid$Growth_ACT_Grade_11_Lbl,
+        lambda = seq(-2,2)) #???
+```
+
+## QQ plots
+```{r}
+mvn(pre_covid, mvnTest = "hz", multivariatePlot = "qq")
+mvn(post_covid, mvnTest = "hz", multivariatePlot = "qq")
+```
+
+## Check for independence between pre and post
+```{r}
+
+```
 
 ## Confidence interval for O vector in the difference with alpha level on 0.05
 ```{r}
@@ -100,5 +117,11 @@ T2 <- t(dif)%*%solve((S_pre/n1)+(S_post/n2))%*%(dif)
 test_stat <- ((n1+n2-2)*p/(n1+n2-p-1))*qf(0.05,p,n1+n2-p-1, lower.tail=F)
 
 T2 > test_stat #TRUE, reject the null hypothesis and assume that there is a difference between pre- and post- covid
+```
+
+## MANOVA
+```{r}
+mano <- manova(cbind() ~ , data = pre_covid)
+summary(mano, test = "Wilks")
 ```
 
