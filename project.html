@@ -492,8 +492,8 @@ mvn(pre_covid, mvnTest = &quot;hz&quot;, showOutliers = T)</code></pre>
 <div id="confidence-interval-for-o-vector-in-the-difference-with-alpha-level-on-0.05" class="section level2">
 <h2>Confidence interval for O vector in the difference with alpha level
 on 0.05</h2>
-<pre class="r"><code>n1 &lt;- dim(pre_covid)[1]
-n2 &lt;- dim(post_covid)[1]
+<pre class="r"><code>n_pre &lt;- dim(pre_covid)[1]
+n_post &lt;- dim(post_covid)[1]
 p &lt;- dim(pre_covid)[2]
 
 S_pre &lt;- cov(pre_covid)
@@ -501,12 +501,47 @@ S_post &lt;- cov(post_covid)
 
 dif &lt;- colMeans(pre_covid)-colMeans(post_covid)
 
-T2 &lt;- t(dif)%*%solve((S_pre/n1)+(S_post/n2))%*%(dif)
-test_stat &lt;- ((n1+n2-2)*p/(n1+n2-p-1))*qf(0.05,p,n1+n2-p-1, lower.tail=F)
+T2 &lt;- t(dif)%*%solve((S_pre/n_pre)+(S_post/n_post))%*%(dif)
+test_stat &lt;- ((n_pre+n_post-2)*p/(n_pre+n_post-p-1))*qf(0.05,p,n_pre+n_post-p-1, lower.tail=F)
 
 T2 &gt; test_stat #TRUE, reject the null hypothesis and assume that there is a difference between pre- and post- covid</code></pre>
 <pre><code>##      [,1]
 ## [1,] TRUE</code></pre>
+</div>
+<div id="subset-of-just-attendance-records" class="section level2">
+<h2>subset of just attendance records</h2>
+<pre class="r"><code>pre_covid_att &lt;- pre_covid[,1:4]
+post_covid_att &lt;- post_covid[,1:4]
+S_pre_att &lt;- cov(pre_covid_att)
+S_post_att &lt;- cov(post_covid_att)
+dif_att &lt;- colMeans(pre_covid_att)-colMeans(post_covid_att)
+T2 &lt;- t(dif_att)%*%solve((S_pre_att/n_pre)+(S_post_att/n_post))%*%(dif_att)
+p &lt;- dim(pre_covid_att)[2]
+test_stat &lt;- ((n_pre+n_post-2)*p/(n_pre+n_post-p-1))*qf(0.05,p,n_pre+n_post-p-1, lower.tail=F) #sig dif
+
+mvn(pre_covid_att)</code></pre>
+<pre><code>## $multivariateNormality
+##            Test       HZ p value MVN
+## 1 Henze-Zirkler 40.11581       0  NO
+## 
+## $univariateNormality
+##               Test                      Variable Statistic   p value Normality
+## 1 Anderson-Darling Student_Attendance_Year_1_Pct   33.4207  &lt;0.001      NO    
+## 2 Anderson-Darling Student_Attendance_Year_2_Pct   38.6767  &lt;0.001      NO    
+## 3 Anderson-Darling Teacher_Attendance_Year_1_Pct   52.3946  &lt;0.001      NO    
+## 4 Anderson-Darling Teacher_Attendance_Year_2_Pct   51.4747  &lt;0.001      NO    
+## 
+## $Descriptives
+##                                 n     Mean   Std.Dev Median  Min   Max 25th
+## Student_Attendance_Year_1_Pct 549 85.77705 10.635258   89.3 35.4 100.0 82.1
+## Student_Attendance_Year_2_Pct 549 84.65155 11.916734   89.1 35.4 100.0 80.8
+## Teacher_Attendance_Year_1_Pct 549 93.53625  2.404728   95.0 88.4  97.9 90.3
+## Teacher_Attendance_Year_2_Pct 549 91.71931  2.414613   90.2 87.0  97.7 89.9
+##                               75th       Skew  Kurtosis
+## Student_Attendance_Year_1_Pct 92.8 -1.8159099  3.458073
+## Student_Attendance_Year_2_Pct 92.6 -1.5968618  1.945646
+## Teacher_Attendance_Year_1_Pct 95.4 -0.6194699 -1.299144
+## Teacher_Attendance_Year_2_Pct 95.0  0.5921718 -1.296660</code></pre>
 </div>
 
 
