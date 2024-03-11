@@ -121,7 +121,6 @@ test_stat <- ((n_pre+n_post-2)*p/(n_pre+n_post-p-1))*qf(0.05,p,n_pre+n_post-p-1,
 T2 > test_stat #TRUE, reject the null hypothesis and assume that there is a difference between pre- and post- covid
 ```
 
-<<<<<<< HEAD
 ## subset of just attendance records
 ```{r}
 pre_covid_att <- pre_covid[,1:4]
@@ -139,8 +138,19 @@ mvn(pre_covid_att)
 ## MANOVA
   
 ```{r}
-mano <- manova(cbind() ~ , data = pre_covid)
-summary(mano, test = "Wilks")
->>>>>>> 871c7d9c43c64e91b248e0c077287ab4e07ef24c
+new_names <- c("student_attendance_1", 
+               "student_attendance_2", 
+               "teacher_attendance_1",
+               "teacher_attendance_2",
+               "suspension_1", 
+               "suspension_2", 
+               "mis_to_sus_1",
+               "mis_to_sus_2")
+colNames(all_data)
+
+
+mano <- manova(cbind() ~ teacher_attendance, data = all_data)
+# summary(mano, test = "Wilks")
+
 ```
 
