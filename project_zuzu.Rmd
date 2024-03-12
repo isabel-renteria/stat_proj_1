@@ -1,0 +1,155 @@
+---
+title: "Project 1"
+author: "Isabel Renteria and Zuzu Trottier"
+---
+..
+## Reading in our data and filter it
+```{r}
+# read in data
+raw_1516 <- read.csv("~/stat_proj_1/data/Y1516.csv", header = T)
+raw_1617 <- read.csv("~/stat_proj_1/data/Y1617.csv", header = T)
+raw_1718 <- read.csv("~/stat_proj_1/data/Y1718.csv", header = T)
+raw_1819 <- read.csv("~/stat_proj_1/data/Y1819.csv", header = T)
+raw_2122 <- read.csv("~/stat_proj_1/data/Y2122.csv", header = T)
+raw_2223 <- read.csv("~/stat_proj_1/data/Y2223.csv", header = T)
+
+# filter data for the attendance and suspension columns
+library(tidyverse)
+
+filt_1516 <- raw_1516 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_1617 <- raw_1617 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_1718 <- raw_1718 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_1819 <- raw_1819 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_2122 <- raw_2122 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+filt_2223 <- raw_2223 %>% 
+  filter(Primary_Category == "HS") %>%
+  select(contains("Attendance") | 
+         contains("Suspensions")) %>%
+  select(!contains("Avg")) %>%
+  select(!contains("Lbl")) %>%
+  select(!contains("PSAT")) %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE))))
+
+## account for one row which is only NA values in 21-22 dataset
+filt_2122$Student_Attendance_Year_1_Pct <- filt_2223$Student_Attendance_Year_1_Pct
+
+# group by pre and post covid
+pre_covid <- rbind(filt_1516,filt_1617,filt_1718)
+post_covid <- rbind(filt_2122,filt_2223)
+```
+
+## Check if MVN
+```{r}
+library(MVN)
+mvn(pre_covid, mvnTest = "hz", showOutliers = T)
+mvn(post_covid, mvnTest = "hz", showOutliers = T)
+```
+
+## Box Cox
+```{r}
+bcPower(post_covid$PSAT_Grade_10_Score_School_Avg,
+        lambda = 2) #???
+```
+
+## QQ plots
+```{r}
+mvn(pre_covid, mvnTest = "hz", multivariatePlot = "qq")
+mvn(post_covid, mvnTest = "hz", multivariatePlot = "qq")
+```
+
+## Check for independence between pre and post
+```{r}
+
+```
+
+## Confidence interval for O vector in the difference with alpha level on 0.05
+```{r}
+n1 <- dim(pre_covid)[1]
+n2 <- dim(post_covid)[1]
+p <- dim(pre_covid)[2]
+
+S_pre <- cov(pre_covid)
+S_post <- cov(post_covid)
+
+dif <- colMeans(pre_covid)-colMeans(post_covid)
+
+T2 <- t(dif)%*%solve((S_pre/n1)+(S_post/n2))%*%(dif)
+test_stat <- ((n1+n2-2)*p/(n1+n2-p-1))*qf(0.05,p,n1+n2-p-1, lower.tail=F)
+
+T2 > test_stat #TRUE, reject the null hypothesis and assume that there is a difference between pre- and post- covid
+```
+
+## MANOVA
+```{r}
+mano <- manova(cbind() ~ , data = pre_covid)
+summary(mano, test = "Pillai")
+```
+
+## PCA
+```{r}
+covmatrix <- cov(pre_covid)
+
+eigeninfo <- eigen(covmatrix)
+eigenvalues <- eigeninfo$values
+eigenvectors <- eigeninfo$vectors
+
+sortedindices <- order(eigenvalues,decreasing=TRUE)
+sortedeigenvalues <- eigenvalues[sortedindices]
+sortedeigenvectors <- eigenvectors[,sortedindices]
+
+pc1 <- sortedeigenvectors[,1]
+proppc1 <- sortedeigenvalues[1]/sum(sortedeigenvalues)
+proppc1
+
+pc2 <- sortedeigenvectors[,2]
+proppc2 <- sortedeigenvalues[2]/sum(sortedeigenvalues)
+proppc2
+
+pc3 <- sortedeigenvectors[,3]
+proppc3 <- sortedeigenvalues[3]/sum(sortedeigenvalues)
+proppc3
+
+screedata <- prcomp(pre_covid,scale=TRUE)
+screeplot(screedata) #???
+```
+
