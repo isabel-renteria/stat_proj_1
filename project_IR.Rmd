@@ -2,7 +2,7 @@
 title: "Project 1"
 author: "Isabel Renteria and Zuzu Trottier"
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ## Reading in our data and filter it
@@ -137,7 +137,6 @@ mvn(pre_covid_att)
 
 
 ```{r}
-select(!"Student_Attendance_Year_1")
 # read in data
 raw_1516 <- read.csv("~/stat_proj_1/data/Y1516.csv", header = T)
 raw_1617 <- read.csv("~/stat_proj_1/data/Y1617.csv", header = T)
@@ -153,6 +152,7 @@ manova_1516 <- raw_1516 %>%
   select(contains("Attendance") | 
          contains("Suspensions") |
          "Primary_Category") %>%
+  select(ends_with("2_Pct")) %>%
   select(!contains("Avg")) %>%
   select(!contains("Lbl")) %>%
   select(!contains("PSAT")) %>% 
@@ -162,6 +162,7 @@ manova_1617 <- raw_1617 %>%
   select(contains("Attendance") | 
          contains("Suspensions") |
          "Primary_Category") %>%
+  select(ends_with("2_Pct")) %>%
   select(!contains("Avg")) %>%
   select(!contains("Lbl")) %>%
   select(!contains("PSAT")) %>% 
@@ -171,6 +172,7 @@ manova_1718 <- raw_1718 %>%
   select(contains("Attendance") | 
          contains("Suspensions") |
          "Primary_Category") %>%
+  select(ends_with("2_Pct")) %>%
   select(!contains("Avg")) %>%
   select(!contains("Lbl")) %>%
   select(!contains("PSAT")) %>% 
@@ -180,6 +182,7 @@ manova_1819 <- raw_1819 %>%
   select(contains("Attendance") | 
          contains("Suspensions") |
          "Primary_Category") %>%
+  select(ends_with("2_Pct")) %>%
   select(!contains("Avg")) %>%
   select(!contains("Lbl")) %>%
   select(!contains("PSAT")) %>% 
@@ -189,28 +192,81 @@ manova_2122 <- raw_2122 %>%
   select(contains("Attendance") | 
          contains("Suspensions") |
          "Primary_Category") %>%
+  select(ends_with("2_Pct")) %>%
   select(!contains("Avg")) %>%
   select(!contains("Lbl")) %>%
-  select(!contains("PSAT")) 
+  select(!contains("PSAT")) %>%
+  na.omit()
 
 manova_2223 <- raw_2223 %>% 
   select(contains("Attendance") | 
          contains("Suspensions") |
          "Primary_Category") %>%
+  select(ends_with("2_Pct")) %>%
   select(!contains("Avg")) %>%
   select(!contains("Lbl")) %>%
   select(!contains("PSAT")) %>% 
   na.omit()
 
+```
+
+# our different considerations of groupings
+```{r}
 pre_covid_mano <- rbind(manova_1516,manova_1617,manova_1718,manova_1819)
 post_covid_mano <- rbind(manova_2122,manova_2223)
+
+pre_covid_mano <- mutate(pre_covid_mano, across(everything(), ~ ifelse(.x == 0, 0.01, .x)))
+post_covid_mano <- mutate(post_covid_mano, across(everything(), ~ ifelse(.x == 0, 0.01, .x)))
+
 all_data <- rbind(pre_covid_mano,post_covid_mano)
 ```
 
-
+# Independent?
 ```{r}
-## MANOVA
-mano <- manova(cbind() ~ , data = pre_covid)
-summary(mano, test = "Wilks")
+cor(pre_covid_mano)
+cor(post_covid_mano)
+cor(all_data)
+# generally independent, with some higher correlation values for (suspensions and student attendance) and (suspensions and misconduct-to-suspensions)
+```
+
+# Normality?
+```{r}
+mvn(post_covid_mano, mvnTest="hz", multivariatePlot = "qq") #no
+mvn(pre_covid_mano, mvnTest="hz" , multivariatePlot = "qq") #no
+mvn(all_data, mvnTest="hz" , multivariatePlot = "qq") #no
+```
+
+#MANOVA
+```{r}
+
+mano_pre <- manova( cbind(Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) ~ Student_Attendance_Year_2_Pct, data = pre_covid_mano)
+summary(mano_pre)
+
+mano_post <- manova( cbind(Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) ~ Student_Attendance_Year_2_Pct, data = post_covid_mano)
+summary(mano_post)
+
+mano_all <- manova( cbind(Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) ~ Student_Attendance_Year_2_Pct, data = all_data)
+summary(mano_all, test = "Wilks")
+```
+#PCA
+```{r}
+PCA_pre <- prcomp(pre_covid_mano)
+fviz_pca_var(PCA_pre,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )
+PCA_post <- prcomp(post_covid_mano)
+fviz_pca_var(PCA_post,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )
+PCA_all <- prcomp(all_data)
+fviz_pca_var(PCA_all,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )
 ```
 
