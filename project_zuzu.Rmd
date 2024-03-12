@@ -2,7 +2,7 @@
 title: "Project 1"
 author: "Isabel Renteria and Zuzu Trottier"
 ---
-
+..
 ## Reading in our data and filter it
 ```{r}
 # read in data
