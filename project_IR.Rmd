@@ -137,6 +137,7 @@ mvn(pre_covid_att)
 
 
 ```{r}
+select(!"Student_Attendance_Year_1")
 # read in data
 raw_1516 <- read.csv("~/stat_proj_1/data/Y1516.csv", header = T)
 raw_1617 <- read.csv("~/stat_proj_1/data/Y1617.csv", header = T)
@@ -204,8 +205,6 @@ manova_2223 <- raw_2223 %>%
 pre_covid_mano <- rbind(manova_1516,manova_1617,manova_1718,manova_1819)
 post_covid_mano <- rbind(manova_2122,manova_2223)
 all_data <- rbind(pre_covid_mano,post_covid_mano)
-
-
 ```
 
 
