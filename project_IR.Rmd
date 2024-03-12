@@ -201,14 +201,38 @@ box_post <- rbind(extra_2122,extra_2223)
 
 #box plot
 ```{r}
-box_bl <- ggplot(box_pre, aes(x = Primary_Category, y = Teacher_Attendance_Year_2_Pct)) +
+library(gridExtra)
+#pre box plot
+box_ta_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Teacher_Attendance_Year_2_Pct)) +
   geom_boxplot() 
-box_bd <- ggplot(box_pre, aes(x = Primary_Category, y = Student_Attendance_Year_2_Pct)) +
+box_sa_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Student_Attendance_Year_2_Pct)) +
   geom_boxplot() 
-box_fl <- ggplot(box_pre, aes(x = Primary_Category, y = Suspensions_Per_100_Students_Year_2_Pct)) +
+box_sus_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Suspensions_Per_100_Students_Year_2_Pct)) +
   geom_boxplot() 
-box_bm <- ggplot(box_pre, aes(x = Primary_Category, y = Misconducts_To_Suspensions_Year_2_Pct)) +
+box_mis_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Misconducts_To_Suspensions_Year_2_Pct)) +
   geom_boxplot() 
-grid.arrange(box_bl, box_bd, box_fl, box_bm, ncol = 2, nrow = 2)
+grid.arrange(box_ta_pre, box_sa_pre, box_sus_pre, box_mis_pre, ncol = 2, nrow = 2)
+
+#post box plot
+box_ta_post <- ggplot(box_post, aes(x = Primary_Category, y = Teacher_Attendance_Year_2_Pct)) +
+  geom_boxplot() 
+box_sa_post <- ggplot(box_post, aes(x = Primary_Category, y = Student_Attendance_Year_2_Pct)) +
+  geom_boxplot() 
+box_sus_post <- ggplot(box_post, aes(x = Primary_Category, y = Suspensions_Per_100_Students_Year_2_Pct)) +
+  geom_boxplot() 
+box_mis_post <- ggplot(box_post, aes(x = Primary_Category, y = Misconducts_To_Suspensions_Year_2_Pct)) +
+  geom_boxplot()
+grid.arrange(box_ta_post, box_sa_post, box_sus_post, box_mis_post, ncol = 2, nrow = 2)
+
+#all box plot
+box_ta_all <- ggplot(rbind(box_pre,box_post), aes(x = Primary_Category, y = Teacher_Attendance_Year_2_Pct)) +
+  geom_boxplot() 
+box_sa_all <- ggplot(rbind(box_pre,box_post), aes(x = Primary_Category, y = Student_Attendance_Year_2_Pct)) +
+  geom_boxplot() 
+box_sus_all <- ggplot(rbind(box_pre,box_post), aes(x = Primary_Category, y = Suspensions_Per_100_Students_Year_2_Pct)) +
+  geom_boxplot() 
+box_mis_all <- ggplot(rbind(box_pre,box_post), aes(x = Primary_Category, y = Misconducts_To_Suspensions_Year_2_Pct)) +
+  geom_boxplot()
+grid.arrange(box_ta_all, box_sa_all, box_sus_all, box_mis_all, ncol = 2, nrow = 2)
 ```
 
