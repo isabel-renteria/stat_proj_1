@@ -3,7 +3,7 @@ title: "Project 1"
 author: "Isabel Renteria and Zuzu Trottier"
 editor_options:
   chunk_output_type: inline
-output: pdf_document
+output: html_document
 ---
 
 #filtering data
@@ -110,7 +110,7 @@ mvn_post <- mvn(pre_covid_mano, mvnTest="hz" , multivariatePlot = "qq") #no
 mvn_all <- mvn(all_data, mvnTest="hz" , multivariatePlot = "qq") #no
 ```
 
-#MANOVA
+#MANOVA (IGNORE THIS MANOVA)
 ```{r}
 mano_pre <- manova( cbind(Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) ~ Student_Attendance_Year_2_Pct, data = pre_covid_mano)
 summary(mano_pre)
@@ -241,5 +241,28 @@ box_sus_all <- ggplot(rbind(box_pre,box_post), aes(x = Primary_Category, y = Sus
 box_mis_all <- ggplot(rbind(box_pre,box_post), aes(x = Primary_Category, y = Misconducts_To_Suspensions_Year_2_Pct)) +
   geom_boxplot()
 grid.arrange(box_ta_all, box_sa_all, box_sus_all, box_mis_all, ncol = 2, nrow = 2)
+```
+# IGNORE
+```{r}
+mano_pre_attend <- manova( cbind(Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) ~Teacher_Attendance_Year_2_Pct+Student_Attendance_Year_2_Pct , data = box_pre)
+summary(mano_pre_attend)
+
+mano_post_attend <- manova( cbind(Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) ~Teacher_Attendance_Year_2_Pct+Student_Attendance_Year_2_Pct , data = box_post)
+summary(mano_post_attend)
+```
+
+##THIS IS THE ONLY MANOVA WE CARE ABOUT
+```{r}
+mano_pre_PC <- manova( cbind(Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Student_Attendance_Year_2_Pct) ~Primary_Category , data = box_pre)
+summary(mano_pre_PC)
+
+mano_post_PC <- manova( cbind(Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Student_Attendance_Year_2_Pct) ~Primary_Category , data = box_post)
+summary(mano_post_PC)
+```
+```{r}
+#pre
+summary.aov(mano_pre_PC)
+#post
+summary.aov(mano_post_PC)
 ```
 
