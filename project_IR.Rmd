@@ -85,6 +85,8 @@ manova_2223 <- raw_2223 %>%
 pre_covid_mano <- rbind(manova_1516,manova_1617,manova_1718,manova_1819)
 post_covid_mano <- rbind(manova_2122,manova_2223)
 
+
+
 pre_covid_mano <- mutate(pre_covid_mano, across(everything(), ~ ifelse(.x == 0, 0.01, .x)))
 post_covid_mano <- mutate(post_covid_mano, across(everything(), ~ ifelse(.x == 0, 0.01, .x)))
 
@@ -202,6 +204,7 @@ box_post <- rbind(extra_2122,extra_2223)
 #box plot
 ```{r}
 library(gridExtra)
+
 #pre box plot
 box_ta_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Teacher_Attendance_Year_2_Pct)) +
   geom_boxplot() 
@@ -210,7 +213,7 @@ box_sa_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Student_Attendance_Y
 box_sus_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Suspensions_Per_100_Students_Year_2_Pct)) +
   geom_boxplot() 
 box_mis_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Misconducts_To_Suspensions_Year_2_Pct)) +
-  geom_boxplot() 
+  geom_boxplot()
 grid.arrange(box_ta_pre, box_sa_pre, box_sus_pre, box_mis_pre, ncol = 2, nrow = 2)
 
 #post box plot
