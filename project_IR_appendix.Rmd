@@ -3,7 +3,11 @@ title: "Appendix"
 author: "Isabel Renteria and Zuzu Trottier"
 editor_options:
   chunk_output_type: inline
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document: default
 ---
 
 ```{r, include=FALSE}
@@ -18,112 +22,76 @@ raw_2223 <- read.csv("~/stat_proj_1/data/Y2223.csv", header = T)
 # filter data for the attendance and suspension columns
 library(tidyverse)
 
-manova_1516 <- raw_1516 %>% 
-  select(contains("Attendance") | 
-         contains("Suspensions") |
-         "Primary_Category") %>%
-  select(ends_with("2_Pct")) %>%
-  select(!contains("Avg")) %>%
-  select(!contains("Lbl")) %>%
-  select(!contains("PSAT")) %>% 
+num_filtered_1516 <- raw_1516 %>% 
+  select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) %>%
   na.omit()
 
-manova_1617 <- raw_1617 %>% 
-  select(contains("Attendance") | 
-         contains("Suspensions") |
-         "Primary_Category") %>%
-  select(ends_with("2_Pct")) %>%
-  select(!contains("Avg")) %>%
-  select(!contains("Lbl")) %>%
-  select(!contains("PSAT")) %>% 
+num_filtered_1617 <- raw_1617 %>% 
+  select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) %>%
   na.omit()
 
-manova_1718 <- raw_1718 %>% 
-  select(contains("Attendance") | 
-         contains("Suspensions") |
-         "Primary_Category") %>%
-  select(ends_with("2_Pct")) %>%
-  select(!contains("Avg")) %>%
-  select(!contains("Lbl")) %>%
-  select(!contains("PSAT")) %>% 
+num_filtered_1718 <- raw_1718 %>% 
+  select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) %>%
   na.omit()
 
-manova_1819 <- raw_1819 %>% 
-  select(contains("Attendance") | 
-         contains("Suspensions") |
-         "Primary_Category") %>%
-  select(ends_with("2_Pct")) %>%
-  select(!contains("Avg")) %>%
-  select(!contains("Lbl")) %>%
-  select(!contains("PSAT")) %>% 
+num_filtered_1819 <- raw_1819 %>% 
+  select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) %>%
   na.omit()
 
-manova_2122 <- raw_2122 %>% 
-  select(contains("Attendance") | 
-         contains("Suspensions") |
-         "Primary_Category") %>%
-  select(ends_with("2_Pct")) %>%
-  select(!contains("Avg")) %>%
-  select(!contains("Lbl")) %>%
-  select(!contains("PSAT")) %>%
+num_filtered_2122 <- raw_2122 %>% 
+  select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) %>%
   na.omit()
 
-manova_2223 <- raw_2223 %>% 
-  select(contains("Attendance") | 
-         contains("Suspensions") |
-         "Primary_Category") %>%
-  select(ends_with("2_Pct")) %>%
-  select(!contains("Avg")) %>%
-  select(!contains("Lbl")) %>%
-  select(!contains("PSAT")) %>% 
+num_filtered_2223 <- raw_2223 %>% 
+  select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) %>%
   na.omit()
 
 ```
 
 ```{r, include=FALSE}
-pre_covid_mano <- rbind(manova_1516,manova_1617,manova_1718,manova_1819)
-post_covid_mano <- rbind(manova_2122,manova_2223)
+pre_covid_num <- rbind(num_filtered_1516,num_filtered_1617,num_filtered_1718,num_filtered_1819)
+post_covid_num <- rbind(num_filtered_2122,num_filtered_2223)
 
-
-
-pre_covid_mano <- mutate(pre_covid_mano, across(everything(), ~ ifelse(.x == 0, 0.01, .x)))
-post_covid_mano <- mutate(post_covid_mano, across(everything(), ~ ifelse(.x == 0, 0.01, .x)))
-
-all_data <- rbind(pre_covid_mano,post_covid_mano)
+all_data <- rbind(pre_covid_num,post_covid_num)
 ```
 
-```{r, include=FALSE}
-cor(pre_covid_mano)
-cor(post_covid_mano)
-cor(all_data)
-# generally independent, with some higher correlation values for (suspensions and student attendance) and (suspensions and misconduct-to-suspensions)
+```{r, include=T}
+cor(pre_covid_num)
+cor(post_covid_num)
+# generally independent, with some higher correlation values for (suspensions and 
+# student attendance) and (suspensions and misconduct-to-suspensions)
 ```
 
 
-```{r, echo=FALSE, fig.width=4,fig.height=4, fig.align='center', fig.cap="Multivariate QQ plot for pre covid data"}
+```{r, echo=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Multivariate QQ plot for pre covid data"}
 library(MVN)
-mvn_pre <- mvn(pre_covid_mano, mvnTest="hz", multivariatePlot = "qq") #no
-```
-
-```{r, echo=FALSE, fig.width=4,fig.height=4, fig.align='center', fig.cap="Multivariate QQ plot for post covid data"}
-mvn_post <- mvn(post_covid_mano, mvnTest="hz" , multivariatePlot = "qq") #no
+# QQ plot
+mvn_pre <- mvn(pre_covid_num, mvnTest="hz", multivariatePlot = "qq") #no
 ```
 
 
-```{r, echo=FALSE, fig.width=4,fig.height=4, fig.align='center', fig.cap="Multivariate QQ plot for all data"}
+```{r, echo=T, fig.width=4,fig.height=4, fig.align='center', fig.cap="Multivariate QQ plot for pre covid data"}
+# MVN
+mvn_pre$multivariateNormality
+```
+
+```{r, echo=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Multivariate QQ plot for post covid data"}
+# QQ plot
+mvn_post <- mvn(post_covid_num, mvnTest="hz" , multivariatePlot = "qq") #no
+```
+
+
+```{r, echo=T, fig.width=4,fig.height=3, fig.align='center', fig.cap="Multivariate QQ plot for post covid data"}
+# MVN
+mvn_post$multivariateNormality
+```
+
+
+```{r, echo=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Multivariate QQ plot for all data"}
+# QQ plot
 mvn_all <- mvn(all_data, mvnTest="hz" , multivariatePlot = "qq") #no
 ```
 
-```{r, include=FALSE}
-mano_pre <- manova( cbind(Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) ~ Student_Attendance_Year_2_Pct, data = pre_covid_mano)
-summary(mano_pre)
-
-mano_post <- manova( cbind(Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) ~ Student_Attendance_Year_2_Pct, data = post_covid_mano)
-summary(mano_post)
-
-mano_all <- manova( cbind(Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct) ~ Student_Attendance_Year_2_Pct, data = all_data)
-summary(mano_all, test = "Wilks")
-```
 
 ```{r, include=F}
 library(factoextra)
@@ -131,10 +99,15 @@ library(broom)
 ```
 
 
-```{r, echo=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for pre covid data's PCA"}
-
-PCA_pre <- prcomp(pre_covid_mano)
+```{r, include=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for pre covid data's PCA"}
+#PC selection
+PCA_pre <- prcomp(pre_covid_num)
 prop_pre <- sum(PCA_pre$sdev[1:2])/sum(PCA_pre$sdev) # 86.4%
+```
+
+
+```{r, echo=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for pre covid data's PCA"}
+#Biplot
 fviz_pca_var(PCA_pre,
              col.ind = "cos2", # Color by the quality of representation
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
@@ -142,9 +115,15 @@ fviz_pca_var(PCA_pre,
              )
 ```
 
-```{r, echo=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for post covid data's PCA"}
-PCA_post <- prcomp(post_covid_mano)
+```{r, include=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for post covid data's PCA"}
+# PC selection
+PCA_post <- prcomp(post_covid_num)
 prop_post <- sum(PCA_post$sdev[1:2])/sum(PCA_post$sdev) # 84.0%
+```
+
+
+```{r, echo=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for post covid data's PCA"}
+# Biplot
 fviz_pca_var(PCA_post,
              col.ind = "cos2", # Color by the quality of representation
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
@@ -153,9 +132,15 @@ fviz_pca_var(PCA_post,
 ```
 
 
-```{r, echo=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for all data's PCA"}
+```{r, include=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for all data's PCA"}
+# PC selection
 PCA_all <- prcomp(all_data)
 prop_all <- sum(PCA_all$sdev[1:2])/sum(PCA_all$sdev) # 83.6%
+```
+
+
+```{r, echo=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for all data's PCA"}
+# Biplot
 fviz_pca_var(PCA_all,
              col.ind = "cos2", # Color by the quality of representation
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
@@ -163,9 +148,15 @@ fviz_pca_var(PCA_all,
              )
 ```
 
-```{r, echo=FALSE, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for pre covid data's PCA when scaled by standard deviation"}
-PCA_pre <- prcomp(pre_covid_mano, scale = sapply(pre_covid_mano,sd))
-prop_pre <- sum(PCA_pre$sdev[1:3])/sum(PCA_pre$sdev) # 84.1%
+```{r, echo=T, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for pre covid data's PCA when scaled by standard deviation"}
+# PC selection
+PCA_pre <- prcomp(pre_covid_num, scale = sapply(pre_covid_num,sd))
+summary(PCA_pre)
+```
+
+
+```{r, echo=F, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for pre covid data's PCA when scaled by standard deviation"}
+# Biplot
 fviz_pca_var(PCA_pre,
              col.ind = "cos2", # Color by the quality of representation
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
@@ -173,9 +164,14 @@ fviz_pca_var(PCA_pre,
              )
 ```
 
+```{r, echo=T, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for post covid data's PCA when scaled by standard deviation"}
+# PC selection
+PCA_post <- prcomp(post_covid_num, scale = sapply(post_covid_num,sd))
+summary(PCA_post)
+```
+
+
 ```{r, echo=FALSE, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for post covid data's PCA when scaled by standard deviation"}
-PCA_post <- prcomp(post_covid_mano, scale = sapply(post_covid_mano,sd))
-prop_post <- sum(PCA_post$sdev[1:3])/sum(PCA_post$sdev) # 85.5%
 fviz_pca_var(PCA_post,
              col.ind = "cos2", # Color by the quality of representation
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
@@ -183,9 +179,14 @@ fviz_pca_var(PCA_post,
              )
 ```
 
-```{r, echo=FALSE, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for all data's PCA when scaled by standard deviation"}
+```{r, echo=T, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for all data's PCA when scaled by standard deviation"}
+# PC selection
 PCA_all <- prcomp(all_data, scale = sapply(all_data,sd))
-prop_all <- sum(PCA_all$sdev[1:3])/sum(PCA_all$sdev) # 81.4%
+summary(PCA_all)
+```
+
+
+```{r, echo=FALSE, fig.width=4,fig.height=4, fig.align='center', fig.cap="Biplot of variables for all data's PCA when scaled by standard deviation"}
 fviz_pca_var(PCA_all,
              col.ind = "cos2", # Color by the quality of representation
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
@@ -196,39 +197,68 @@ fviz_pca_var(PCA_all,
 ```
 
 ```{r, include=FALSE, fig.width=4,fig.height=4, fig.align='center'}
-extra_1516 <- raw_1516 %>% 
+manova_1516 <- raw_1516 %>% 
+  select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Primary_Category) %>%
+  na.omit()
+
+manova_1617 <- raw_1617 %>% 
   select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Primary_Category) %>%
   na.omit() 
 
-extra_1617 <- raw_1617 %>% 
+manova_1718 <- raw_1718 %>% 
   select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Primary_Category) %>%
   na.omit() 
 
-extra_1718 <- raw_1718 %>% 
+manova_1819 <- raw_1819 %>% 
   select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Primary_Category) %>%
   na.omit() 
 
-extra_1819 <- raw_1819 %>% 
+manova_2122 <- raw_2122 %>% 
   select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Primary_Category) %>%
   na.omit() 
 
-extra_2122 <- raw_2122 %>% 
+manova_2223 <- raw_2223 %>% 
   select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Primary_Category) %>%
   na.omit() 
 
-extra_2223 <- raw_2223 %>% 
-  select(Student_Attendance_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Primary_Category) %>%
-  na.omit() 
+box_pre <- rbind(manova_1516,manova_1617,manova_1718,manova_1819)
+box_post <- rbind(manova_2122,manova_2223)
 
-box_pre <- rbind(extra_1516,extra_1617,extra_1718,extra_1819)
-box_post <- rbind(extra_2122,extra_2223)
+```
 
+```{r, include=T}
+# MANOVA with Wilks-Lambda test for pre covid data
+mano_pre_PC <- manova( cbind(Suspensions_Per_100_Students_Year_2_Pct,
+                             Misconducts_To_Suspensions_Year_2_Pct,
+                             Teacher_Attendance_Year_2_Pct,
+                             Student_Attendance_Year_2_Pct) 
+                       ~Primary_Category , data = box_pre)
+summary(mano_pre_PC, test="Wilks")
 
+# MANOVA with Wilks-Lambda test for post covid data
+mano_post_PC <- manova( cbind(Suspensions_Per_100_Students_Year_2_Pct,
+                              Misconducts_To_Suspensions_Year_2_Pct,
+                              Teacher_Attendance_Year_2_Pct,
+                              Student_Attendance_Year_2_Pct) 
+                        ~Primary_Category , data = box_post)
+summary(mano_post_PC, test="Wilks")
+
+```
+
+```{r, include=T}
+#pre ANOVAs
+summary.aov(mano_pre_PC)
+#post ANOVAs
+summary.aov(mano_post_PC)
 ```
 
 ```{r, include=F}
 library(gridExtra)
 library(ggplot2)
+```
+
+
+```{r, include=T}
 #pre box plot
 box_ta_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Teacher_Attendance_Year_2_Pct)) +
   geom_boxplot() 
@@ -238,7 +268,6 @@ box_sus_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Suspensions_Per_100
   geom_boxplot() 
 box_mis_pre <- ggplot(box_pre, aes(x = Primary_Category, y = Misconducts_To_Suspensions_Year_2_Pct)) +
   geom_boxplot()
-grid.arrange(box_ta_pre, box_sa_pre, box_sus_pre, box_mis_pre, ncol = 2, nrow = 2)
 
 #post box plot
 box_ta_post <- ggplot(box_post, aes(x = Primary_Category, y = Teacher_Attendance_Year_2_Pct)) +
@@ -249,18 +278,6 @@ box_sus_post <- ggplot(box_post, aes(x = Primary_Category, y = Suspensions_Per_1
   geom_boxplot() 
 box_mis_post <- ggplot(box_post, aes(x = Primary_Category, y = Misconducts_To_Suspensions_Year_2_Pct)) +
   geom_boxplot()
-grid.arrange(box_ta_post, box_sa_post, box_sus_post, box_mis_post, ncol = 2, nrow = 2)
-
-#all box plot
-box_ta_all <- ggplot(rbind(box_pre,box_post), aes(x = Primary_Category, y = Teacher_Attendance_Year_2_Pct)) +
-  geom_boxplot() 
-box_sa_all <- ggplot(rbind(box_pre,box_post), aes(x = Primary_Category, y = Student_Attendance_Year_2_Pct)) +
-  geom_boxplot() 
-box_sus_all <- ggplot(rbind(box_pre,box_post), aes(x = Primary_Category, y = Suspensions_Per_100_Students_Year_2_Pct)) +
-  geom_boxplot() 
-box_mis_all <- ggplot(rbind(box_pre,box_post), aes(x = Primary_Category, y = Misconducts_To_Suspensions_Year_2_Pct)) +
-  geom_boxplot()
-grid.arrange(box_ta_all, box_sa_all, box_sus_all, box_mis_all, ncol = 2, nrow = 2)
 ```
 
 
