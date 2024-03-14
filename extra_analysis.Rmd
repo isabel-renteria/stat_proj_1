@@ -132,3 +132,9 @@ test_stat <- ((n_pre+n_post-2)*p/(n_pre+n_post-p-1))*qf(0.05,p,n_pre+n_post-p-1,
 
 mvn(pre_covid_att)
 ```
+
+# teacher attendance
+```{r}
+mvn()
+```
+

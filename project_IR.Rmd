@@ -254,11 +254,13 @@ summary(mano_post_attend)
 ##THIS IS THE ONLY MANOVA WE CARE ABOUT
 ```{r}
 mano_pre_PC <- manova( cbind(Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Student_Attendance_Year_2_Pct) ~Primary_Category , data = box_pre)
-summary(mano_pre_PC)
+summary(mano_pre_PC, test="Wilks")
 
 mano_post_PC <- manova( cbind(Suspensions_Per_100_Students_Year_2_Pct,Misconducts_To_Suspensions_Year_2_Pct,Teacher_Attendance_Year_2_Pct,Student_Attendance_Year_2_Pct) ~Primary_Category , data = box_post)
-summary(mano_post_PC)
+summary(mano_post_PC, test="Wilks")
+
 ```
+
 ```{r}
 #pre
 summary.aov(mano_pre_PC)
